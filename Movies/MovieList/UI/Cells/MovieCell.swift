@@ -112,13 +112,6 @@ class MovieCell: UITableViewCell {
         setupGradientLayer()
     }
     
-//    func set(movie: Movie){
-//        movieImageView.image = movie.image
-//        movieTitleLabel.text = movie.title
-//        movieGenreLabel.text = movie.genre
-//        movieYearLabel.text = movie.year
-//    }
-    
     func configure(movie: MovieAPIListView){
         id = movie.id
         movieTitleLabel.text = movie.title
@@ -128,8 +121,6 @@ class MovieCell: UITableViewCell {
         movieYearLabel.text = movie.year
     }
 
-
-    
     @objc func buttonToggle(sender: UIButton) {
         if favouriteButton.isTouchInside == true {
             favouriteButton.isSelected.toggle()
