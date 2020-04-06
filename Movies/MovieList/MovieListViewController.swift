@@ -62,30 +62,41 @@ class MovieListViewController: UIViewController {
         }
     }
     
+    func insertDirector(movieId: Int){
+        networkManager.getMovieDirector(from: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId){ (director) in
+            if let safeDirector = director{
+               // self.dataSource = self.createScreenData(from: safeDirector)
+            }else {
+                
+            }
+        }
+    }
     
     
-//    func getGenres(){
-//           indicator.startAnimating()
-//           networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
-//               self.indicator.stopAnimating()
-//               if let safeGenreList = genres{
-//                   self.dataSource = self.createScreenData(from: safeGenreList)
-//                   self.tableView.reloadData()
-//               }else{
-//
-//               }
-//           }
-//       }
+    
+    //    func getGenres(){
+    //           indicator.startAnimating()
+    //           networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
+    //               self.indicator.stopAnimating()
+    //               if let safeGenreList = genres{
+    //                   self.dataSource = self.createScreenData(from: safeGenreList)
+    //                   self.tableView.reloadData()
+    //               }else{
+    //
+    //               }
+    //           }
+    //       }
     
     private func createScreenData(from data: [MovieAPIList]) -> [MovieAPIListView]{
         return data.map { (data) -> MovieAPIListView in
+            //insertDirector(movieId: data.id)
             let year = DateUtils.getYearFromDate(stringDate: data.releaseDate)
             return MovieAPIListView(id: data.id,
                                     title: data.originalTitle,
-                                    description: data.overview,
                                     imageURL: data.posterPath,
+                                    description: data.overview,
                                     year: year)
-//                                    genres: data.genreIds)
+            //                                    genres: data.genreIds)
         }
     }
     
@@ -127,11 +138,11 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let item = dataSource[indexPath.row]
-            let vc = SingleMovieViewController(movie: item)
-    
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = dataSource[indexPath.row]
+        let vc = SingleMovieViewController(movie: item)
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
 }
 

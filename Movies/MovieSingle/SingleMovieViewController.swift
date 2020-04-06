@@ -86,7 +86,6 @@ class SingleMovieViewController: UIViewController {
 //        screenData.append(MovieCellItem(type: .genre, data: movie.genre))
 //        screenData.append(MovieCellItem(type: .director, data: movie.director))
         screenData.append(MovieCellItem(type: .description, data: movie.description))
-        
         return screenData
     }
     
@@ -144,14 +143,14 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
 //
 //            return cell
 //
-//        case .director:
-//            guard let safeData = item.data as? String else {return UITableViewCell()}
-//            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DirectorCell", for: indexPath) as?
-//                DirectorCell else {
-//                    fatalError("The dequeued cell is not an instance of DirectorCell.")}
-//            cell.configureCell(director: safeData)
-//
-//            return cell
+        case .director:
+            guard let safeData = item.data as? String else {return UITableViewCell()}
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DirectorCell", for: indexPath) as?
+                DirectorCell else {
+                    fatalError("The dequeued cell is not an instance of DirectorCell.")}
+            cell.configureCell(director: safeData)
+
+            return cell
             
         case .description:
             guard let safeData = item.data as? String else{return UITableViewCell()}

@@ -16,7 +16,7 @@ struct MovieAPIListView {
     let year: String
 //    let genreIds: String
     
-    init(id: Int, title: String, description: String, imageURL: String, year: String){
+    init(id: Int, title: String, imageURL: String, description: String, year: String){
         self.id = id
         self.title = title
         self.description = description

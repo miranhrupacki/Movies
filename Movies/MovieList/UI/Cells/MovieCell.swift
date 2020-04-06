@@ -115,7 +115,6 @@ class MovieCell: UITableViewCell {
     func configure(movie: MovieAPIListView){
         id = movie.id
         movieTitleLabel.text = movie.title
-        movieGenreLabel.text = movie.description
         //movieGenreLabel.text = movie.genres
         movieImageView.loadImage(with: movie.imageURL)
         movieYearLabel.text = movie.year

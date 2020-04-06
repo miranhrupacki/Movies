@@ -12,6 +12,6 @@ enum MoviesDataTypeEnum {
     case image
     case title
 //    case genre
-//    case director
+    case director
     case description
 }
