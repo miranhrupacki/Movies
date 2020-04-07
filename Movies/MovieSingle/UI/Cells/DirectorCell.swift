@@ -36,8 +36,9 @@ class DirectorCell: UITableViewCell {
     }
     
     func configureCell(director: String){
-        selectionStyle = .none
-        movieDirectorLabel.text = "Director:  \(director)"
+        let message = NSMutableAttributedString(string: "Director: ", attributes: [NSAttributedString.Key.font : UIFont(name: "Quicksand-Bold", size: 21)!, NSAttributedString.Key.foregroundColor : UIColor(red: 1, green: 1, blue: 1, alpha: 0.8)])
+        message.append(NSAttributedString(string: director, attributes: [NSAttributedString.Key.font : UIFont(name: "Quicksand-Regular", size: 21)!]))
+        movieDirectorLabel.attributedText = message
     }
     
     func setupConstraints() {

@@ -18,7 +18,6 @@ class SingleMovieViewController: UIViewController {
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     
     private var dataSource = [MovieAPIListView]()
-//    private var directorDataSource = Director(name: "adsad", movieId: 2)
     
     private let networkManager: NetworkManager
     
@@ -49,7 +48,6 @@ class SingleMovieViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-//        tableView.reloadData()
         print(self.movie)
     }
     
@@ -98,7 +96,6 @@ class SingleMovieViewController: UIViewController {
         }
     }
     
-    
     func createScreenData(movie: MovieAPIListView, director: Director)  -> [MovieCellItem] {
         var screenData: [MovieCellItem] = []
         screenData.append(MovieCellItem(type: .image, data: movie.imageURL))
@@ -117,8 +114,8 @@ class SingleMovieViewController: UIViewController {
         
         backButton.snp.makeConstraints { (maker) in
             maker.top.equalTo(view.safeAreaLayoutGuide).inset(35)
-            maker.leading.equalTo(view.safeAreaLayoutGuide).offset(21)
-            maker.trailing.equalTo(view.safeAreaLayoutGuide).offset(-330)
+            maker.leading.equalTo(view.safeAreaLayoutGuide).inset(21)
+            maker.trailing.equalTo(view.safeAreaLayoutGuide).inset(330)
         }
     }
 }

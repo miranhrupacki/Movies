@@ -61,27 +61,22 @@ class MovieListViewController: UIViewController {
             }
         }
     }
-    
 
+        func getGenres(){
+               indicator.startAnimating()
+               networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
+                   self.indicator.stopAnimating()
+                   if let safeGenreList = genres{
+                       self.dataSource = self.createScreenData(from: safeGenreList)
+                       self.tableView.reloadData()
+                   }else{
     
-    
-    
-    //    func getGenres(){
-    //           indicator.startAnimating()
-    //           networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
-    //               self.indicator.stopAnimating()
-    //               if let safeGenreList = genres{
-    //                   self.dataSource = self.createScreenData(from: safeGenreList)
-    //                   self.tableView.reloadData()
-    //               }else{
-    //
-    //               }
-    //           }
-    //       }
+                   }
+               }
+           }
     
     private func createScreenData(from data: [MovieAPIList]) -> [MovieAPIListView]{
         return data.map { (data) -> MovieAPIListView in
-            //insertDirector(movieId: data.id)
             let year = DateUtils.getYearFromDate(stringDate: data.releaseDate)
             return MovieAPIListView(id: data.id,
                                     title: data.originalTitle,

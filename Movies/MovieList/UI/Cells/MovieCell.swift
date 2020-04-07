@@ -155,10 +155,10 @@ class MovieCell: UITableViewCell {
         
         movieTitleLabel.snp.makeConstraints{(maker) in
             maker.top.equalToSuperview().inset(15)
-            maker.leading.equalTo(movieImageView.snp.trailing).inset(-20)
+            maker.leading.equalTo(movieImageView.snp.trailing).inset(-15)
             maker.trailing.equalToSuperview().inset(12)
         }
-        
+                
         movieGenreLabel.snp.makeConstraints{(maker) in
             maker.top.equalTo(movieTitleLabel.snp.bottom).inset(-1)
             maker.leading.equalTo(movieImageView.snp.trailing).inset(-20)
