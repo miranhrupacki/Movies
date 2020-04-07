@@ -94,13 +94,13 @@ class ImageCell: UITableViewCell {
         
         favouriteButton.snp.makeConstraints { (maker) in
             maker.top.equalToSuperview().inset(35)
-            maker.leading.equalToSuperview().offset(325)
+            maker.leading.equalToSuperview().inset(325)
             maker.trailing.equalToSuperview().inset(15)
         }
         
         watchedButton.snp.makeConstraints{(maker) in
             maker.top.equalToSuperview().inset(35)
-            maker.leading.equalToSuperview().offset(275)
+            maker.leading.equalToSuperview().inset(275)
             maker.trailing.equalToSuperview().inset(65)
         }
     }

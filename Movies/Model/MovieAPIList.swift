@@ -23,10 +23,10 @@ public struct MovieAPIList: Codable{
     let voteAverage: Float
 }
 
-public struct Genres: Codable {
-    let id: Int
-    let name: String
-}
+//public struct Genres: Codable {
+//    let id: Int
+//    let name: String
+//}
 
 //public struct Director: Codable {
 //    let movieId: Int

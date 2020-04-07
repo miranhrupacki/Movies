@@ -140,9 +140,9 @@ class MovieCell: UITableViewCell {
         
         container.snp.makeConstraints {(maker) in
             maker.top.equalToSuperview().inset(8)
-            maker.bottom.equalToSuperview().offset(-8)
+            maker.bottom.equalToSuperview().inset(8)
             maker.leading.equalToSuperview().inset(15)
-            maker.trailing.equalToSuperview().offset(-15)
+            maker.trailing.equalToSuperview().inset(15)
         }
         
         movieImageView.snp.makeConstraints{(maker) in
@@ -155,14 +155,14 @@ class MovieCell: UITableViewCell {
         
         movieTitleLabel.snp.makeConstraints{(maker) in
             maker.top.equalToSuperview().inset(15)
-            maker.leading.equalTo(movieImageView.snp.trailing).offset(20)
-            maker.trailing.equalToSuperview().offset(-12)
+            maker.leading.equalTo(movieImageView.snp.trailing).inset(-20)
+            maker.trailing.equalToSuperview().inset(12)
         }
         
         movieGenreLabel.snp.makeConstraints{(maker) in
-            maker.top.equalTo(movieTitleLabel.snp.bottom).offset(1)
-            maker.leading.equalTo(movieImageView.snp.trailing).offset(20)
-            maker.trailing.equalToSuperview().offset(-15)
+            maker.top.equalTo(movieTitleLabel.snp.bottom).inset(-1)
+            maker.leading.equalTo(movieImageView.snp.trailing).inset(-20)
+            maker.trailing.equalToSuperview().inset(-15)
         }
         
         movieYearLabel.snp.makeConstraints{(maker) in
@@ -171,15 +171,15 @@ class MovieCell: UITableViewCell {
         }
         
         favouriteButton.snp.makeConstraints{(maker) in
-            maker.top.equalToSuperview().offset(111)
-            maker.leading.equalTo(movieImageView.snp.trailing).offset(140)
-            maker.trailing.equalToSuperview().offset(-15)
+            maker.top.equalToSuperview().inset(111)
+            maker.leading.equalTo(movieImageView.snp.trailing).inset(-140)
+            maker.trailing.equalToSuperview().inset(15)
         }
         
         watchedButton.snp.makeConstraints{(maker) in
-            maker.top.equalToSuperview().offset(111)
-            maker.leading.equalTo(movieImageView.snp.trailing).offset(90)
-            maker.trailing.equalToSuperview().offset(-65)
+            maker.top.equalToSuperview().inset(111)
+            maker.leading.equalTo(movieImageView.snp.trailing).inset(-90)
+            maker.trailing.equalToSuperview().inset(65)
         }
     }
 }

@@ -62,15 +62,7 @@ class MovieListViewController: UIViewController {
         }
     }
     
-    func insertDirector(movieId: Int){
-        networkManager.getMovieDirector(from: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId){ (director) in
-            if let safeDirector = director{
-               // self.dataSource = self.createScreenData(from: safeDirector)
-            }else {
-                
-            }
-        }
-    }
+
     
     
     
@@ -140,7 +132,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = dataSource[indexPath.row]
-        let vc = SingleMovieViewController(movie: item)
+        let vc = SingleMovieViewController(movie: item, networkManager: networkManager)
         
         self.navigationController?.pushViewController(vc, animated: true)
     }

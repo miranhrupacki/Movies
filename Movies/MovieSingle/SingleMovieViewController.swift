@@ -13,9 +13,14 @@ class SingleMovieViewController: UIViewController {
     
     let movie: MovieAPIListView
     
-    //private var dataSource = [MovieAPIListView]()
-
     var screenData = [MovieCellItem]()
+    
+    let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+    
+    private var dataSource = [MovieAPIListView]()
+//    private var directorDataSource = Director(name: "adsad", movieId: 2)
+    
+    private let networkManager: NetworkManager
     
     var tableView: UITableView = {
         let tableView = UITableView()
@@ -31,8 +36,9 @@ class SingleMovieViewController: UIViewController {
         return backButton
     }()
     
-    init(movie: MovieAPIListView){
+    init(movie: MovieAPIListView, networkManager: NetworkManager){
         self.movie = movie
+        self.networkManager = networkManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,16 +49,18 @@ class SingleMovieViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+//        tableView.reloadData()
+        print(self.movie)
     }
     
     func setupUI(){
         backButton.addTarget(self, action: #selector(toPreviousView(sender:)), for: .touchUpInside)
         
         self.navigationItem.setHidesBackButton(true, animated: true)
-        self.screenData = createScreenData(movie: self.movie)
         
         configureTableView()
         setupConstraints()
+        insertDirector(movieId: movie.id)
     }
     
     @objc func toPreviousView(sender: UIButton){
@@ -79,12 +87,24 @@ class SingleMovieViewController: UIViewController {
         tableView.dataSource = self
     }
     
-    func createScreenData(movie: MovieAPIListView)  -> [MovieCellItem] {
+    func insertDirector(movieId: Int){
+        networkManager.getMovieDirector(from: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId){ (director) in
+            if let safeDirector = director{
+                self.screenData = self.createScreenData(movie: self.movie, director: safeDirector)
+                self.tableView.reloadData()
+            }else {
+                
+            }
+        }
+    }
+    
+    
+    func createScreenData(movie: MovieAPIListView, director: Director)  -> [MovieCellItem] {
         var screenData: [MovieCellItem] = []
         screenData.append(MovieCellItem(type: .image, data: movie.imageURL))
         screenData.append(MovieCellItem(type: .title, data: movie.title))
 //        screenData.append(MovieCellItem(type: .genre, data: movie.genre))
-//        screenData.append(MovieCellItem(type: .director, data: movie.director))
+        screenData.append(MovieCellItem(type: .director, data: director.name))
         screenData.append(MovieCellItem(type: .description, data: movie.description))
         return screenData
     }

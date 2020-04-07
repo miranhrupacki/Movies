@@ -11,4 +11,10 @@ import Foundation
 public struct Director: Codable {
     let name: String
     let movieId: Int
+    
+//    init(name: String, movieId: Int){
+//        self.name = name
+//        self.movieId = movieId
+//        }
 }
+

@@ -45,7 +45,7 @@ class TitleCell: UITableViewCell {
         movieTitleLabel.snp.makeConstraints{(maker) in
             maker.top.equalToSuperview().inset(5)
             maker.leading.equalToSuperview().inset(25)
-            maker.trailing.equalToSuperview().offset(25)
+            maker.trailing.equalToSuperview().inset(25)
             maker.bottom.equalToSuperview()
         }
     }

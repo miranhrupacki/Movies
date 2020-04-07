@@ -46,7 +46,7 @@ class DescriptionCell: UITableViewCell {
             maker.top.equalToSuperview().inset(5)
             maker.bottom.equalToSuperview()
             maker.leading.equalToSuperview().inset(25)
-            maker.trailing.equalToSuperview().offset(25)
+            maker.trailing.equalToSuperview().inset(25)
         }
     }
 }
