@@ -22,15 +22,3 @@ public struct MovieAPIList: Codable{
     let video: Bool
     let voteAverage: Float
 }
-
-//public struct Genres: Codable {
-//    let id: Int
-//    let name: String
-//}
-
-//public struct Director: Codable {
-//    let movieId: Int
-//    let name: String
-//}
-
-

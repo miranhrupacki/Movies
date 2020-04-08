@@ -61,29 +61,32 @@ class MovieListViewController: UIViewController {
             }
         }
     }
-
-        func getGenres(){
-               indicator.startAnimating()
-               networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
-                   self.indicator.stopAnimating()
-                   if let safeGenreList = genres{
-                       self.dataSource = self.createScreenData(from: safeGenreList)
-                       self.tableView.reloadData()
-                   }else{
     
-                   }
-               }
-           }
+    func getGenres(){
+        indicator.startAnimating()
+        networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
+            self.indicator.stopAnimating()
+            if let safeGenreList = genres{
+                self.dataSource = self.createScreenData(from: safeGenreList)
+                self.tableView.reloadData()
+            }else{
+                
+            }
+        }
+    }
     
     private func createScreenData(from data: [MovieAPIList]) -> [MovieAPIListView]{
         return data.map { (data) -> MovieAPIListView in
             let year = DateUtils.getYearFromDate(stringDate: data.releaseDate)
+            let watched = DatabaseManager.isMovieWatched(with: data.id)
+            let favourite = DatabaseManager.isMovieFovurited(with: data.id)
             return MovieAPIListView(id: data.id,
                                     title: data.originalTitle,
                                     imageURL: data.posterPath,
                                     description: data.overview,
-                                    year: year)
-            //                                    genres: data.genreIds)
+                                    year: year,
+                                    watched: watched,
+                                    favourite: favourite)
         }
     }
     
@@ -118,9 +121,9 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cells.movieCell) as! MovieCell
         
-        
         let movie = dataSource[indexPath.row]
         cell.configure(movie: movie)
+        cell.delegate = self
         
         return cell
     }
@@ -132,4 +135,25 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }
+
+extension MovieListViewController: UserInteraction{
+    func watchedMoviePressed(with id: Int) {
+        guard let movie = dataSource.enumerated().first(where: { (movie) -> Bool in
+            return movie.element.id == id
+        }) else {return}
+        !movie.element.watched ? DatabaseManager.watchedMovie(with: movie.element.id) : DatabaseManager.removeMovieFromWatched(with: movie.element.id)
+        dataSource[movie.offset].watched = !movie.element.watched
+        tableView.reloadRows(at: [IndexPath(row: movie.offset, section: 0)], with: .none)
+    }
+    
+    func favouriteMoviePressed(with id: Int) {
+        guard let movie = dataSource.enumerated().first(where: { (movie) -> Bool in
+            return movie.element.id == id
+        }) else {return}
+        !movie.element.favourite ? DatabaseManager.favouritedMovie(with: movie.element.id) : DatabaseManager.removeMovieFromFavourite(with: movie.element.id)
+        dataSource[movie.offset].favourite = !movie.element.favourite
+        tableView.reloadRows(at: [IndexPath(row: movie.offset, section: 0)], with: .none)
+    }
+}
+
 

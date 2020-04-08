@@ -10,6 +10,6 @@ import Foundation
 
 public struct Response<T: Codable>: Codable {
     let results: T?
-//    let genres: T?
+    let genres: T?
     let crew: T?
 }

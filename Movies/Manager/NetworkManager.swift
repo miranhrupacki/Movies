@@ -67,32 +67,32 @@ class NetworkManager{
         }.resume()
     }
     
-    //    func getGenres(from url: String,_ completed: @escaping([Genres]?) -> Void){
-    //        guard let safeUrl = URL(string: url + apiKey) else{
-    //            DispatchQueue.main.async {
-    //                completed(nil)
-    //            }
-    //            return
-    //        }
-    //        URLSession.shared.dataTask(with: safeUrl){ data, urlResponse, error in
-    //            guard let safeData = data, error == nil, urlResponse != nil else {
-    //                DispatchQueue.main.async {
-    //                    completed(nil)
-    //                }
-    //                return
-    //            }
-    //                if let decodedObject: Response<[Genres]> = SerializationManager.parseData(jsonData: safeData){
-    //                    DispatchQueue.main.async {
-    //                        completed(decodedObject.genres)
-    //                    }
-    //                }
-    //                else {
-    //                    print("ERROR: palo parsanje")
-    //                    DispatchQueue.main.async {
-    //                        completed(nil)
-    //                    }
-    //                }
-    //
-    //        }.resume()
-    //    }
+        func getGenres(from url: String,_ completed: @escaping([Genres]?) -> Void){
+            guard let safeUrl = URL(string: url + apiKey) else{
+                DispatchQueue.main.async {
+                    completed(nil)
+                }
+                return
+            }
+            URLSession.shared.dataTask(with: safeUrl){ data, urlResponse, error in
+                guard let safeData = data, error == nil, urlResponse != nil else {
+                    DispatchQueue.main.async {
+                        completed(nil)
+                    }
+                    return
+                }
+                    if let decodedObject: Response<[Genres]> = SerializationManager.parseData(jsonData: safeData){
+                        DispatchQueue.main.async {
+                            completed(decodedObject.genres)
+                        }
+                    }
+                    else {
+                        print("ERROR: palo parsanje")
+                        DispatchQueue.main.async {
+                            completed(nil)
+                        }
+                    }
+    
+            }.resume()
+        }
 }

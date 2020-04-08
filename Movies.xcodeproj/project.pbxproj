@@ -13,6 +13,9 @@
 		F1028C1F2438BCF5006BCBED /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1028C1E2438BCF5006BCBED /* Response.swift */; };
 		F1028C222438BD66006BCBED /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1028C212438BD66006BCBED /* NetworkManager.swift */; };
 		F1028C242438BD70006BCBED /* SerializationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1028C232438BD70006BCBED /* SerializationManager.swift */; };
+		F1572AAA243DAD1A005F8F83 /* Genres.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1572AA9243DAD1A005F8F83 /* Genres.swift */; };
+		F1572AAC243DDC8C005F8F83 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1572AAB243DDC8C005F8F83 /* DatabaseManager.swift */; };
+		F1572AAF243DDEAB005F8F83 /* UserInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1572AAE243DDEAB005F8F83 /* UserInteraction.swift */; };
 		F1AE6184243A23F900664364 /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AE6183243A23F900664364 /* DateUtils.swift */; };
 		F1AF0BC5243B299B008A68A2 /* Director.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AF0BC4243B299B008A68A2 /* Director.swift */; };
 		F1AF0BC7243B2A56008A68A2 /* Crew.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AF0BC6243B2A56008A68A2 /* Crew.swift */; };
@@ -45,6 +48,9 @@
 		F1028C1E2438BCF5006BCBED /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		F1028C212438BD66006BCBED /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		F1028C232438BD70006BCBED /* SerializationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializationManager.swift; sourceTree = "<group>"; };
+		F1572AA9243DAD1A005F8F83 /* Genres.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genres.swift; sourceTree = "<group>"; };
+		F1572AAB243DDC8C005F8F83 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		F1572AAE243DDEAB005F8F83 /* UserInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInteraction.swift; sourceTree = "<group>"; };
 		F1AE6183243A23F900664364 /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		F1AF0BC4243B299B008A68A2 /* Director.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Director.swift; sourceTree = "<group>"; };
 		F1AF0BC6243B2A56008A68A2 /* Crew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crew.swift; sourceTree = "<group>"; };
@@ -104,6 +110,7 @@
 			children = (
 				F1028C212438BD66006BCBED /* NetworkManager.swift */,
 				F1028C232438BD70006BCBED /* SerializationManager.swift */,
+				F1572AAB243DDC8C005F8F83 /* DatabaseManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -141,6 +148,14 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		F1572AAD243DDE9A005F8F83 /* Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				F1572AAE243DDEAB005F8F83 /* UserInteraction.swift */,
+			);
+			path = Delegate;
+			sourceTree = "<group>";
+		};
 		F1AE6182243A23EA00664364 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,6 +185,7 @@
 		F1BABCD12432371C003D2DCC /* Movies */ = {
 			isa = PBXGroup;
 			children = (
+				F1572AAD243DDE9A005F8F83 /* Delegate */,
 				F1AE6182243A23EA00664364 /* Utils */,
 				F1BABCEF2432384D003D2DCC /* Fonts */,
 				F1BABCF024323852003D2DCC /* Model */,
@@ -214,6 +230,7 @@
 				F1028C1E2438BCF5006BCBED /* Response.swift */,
 				F1AF0BC4243B299B008A68A2 /* Director.swift */,
 				F1AF0BC6243B2A56008A68A2 /* Crew.swift */,
+				F1572AA9243DAD1A005F8F83 /* Genres.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -366,9 +383,12 @@
 				F1BABCE7243237BC003D2DCC /* MovieCellItem.swift in Sources */,
 				F1BABCF9243238AA003D2DCC /* GenreCell.swift in Sources */,
 				F1BABCF7243238A1003D2DCC /* TitleCell.swift in Sources */,
+				F1572AAA243DAD1A005F8F83 /* Genres.swift in Sources */,
 				F1BABCD32432371C003D2DCC /* AppDelegate.swift in Sources */,
 				F1028C242438BD70006BCBED /* SerializationManager.swift in Sources */,
+				F1572AAC243DDC8C005F8F83 /* DatabaseManager.swift in Sources */,
 				F1AF0BC5243B299B008A68A2 /* Director.swift in Sources */,
+				F1572AAF243DDEAB005F8F83 /* UserInteraction.swift in Sources */,
 				F1BABCE9243237E9003D2DCC /* MovieCell.swift in Sources */,
 				F1BABCFD243238C3003D2DCC /* DescriptionCell.swift in Sources */,
 				F1AF0BC7243B2A56008A68A2 /* Crew.swift in Sources */,
