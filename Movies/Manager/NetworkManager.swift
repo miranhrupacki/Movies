@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 class NetworkManager{
     let apiKey = "?api_key=50385d4baddec9293929f01968c85235"
@@ -34,8 +35,7 @@ class NetworkManager{
             }
         }.resume()
     }
-    
-    
+
     func getMovieDirector(from url: String, movieId: Int, _ completed: @escaping(Director?) -> Void){
         guard let safeUrl = URL(string: url + apiKey) else{
             DispatchQueue.main.async {

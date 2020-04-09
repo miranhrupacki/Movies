@@ -38,6 +38,10 @@ class ImageCell: UITableViewCell {
     }()
 
     let gradientLayer = CAGradientLayer()
+    
+    weak var delegate: UserInteraction?
+    
+    internal var id: Int = 0
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?){
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,8 +49,8 @@ class ImageCell: UITableViewCell {
     }
     
     func setupUI(){
-        favouriteButton.addTarget(self, action: #selector(buttonToggle(sender:)), for: .touchUpInside)
-        watchedButton.addTarget(self, action: #selector(buttonToggle(sender:)), for: .touchUpInside)
+        watchedButton.addTarget(self, action: #selector(watchedButtonPressed), for: .touchUpInside)
+        favouriteButton.addTarget(self, action: #selector(favouriteMoviePressed), for: .touchUpInside)
         contentView.addSubview(movieImageView)
         contentView.addSubview(watchedButton)
         contentView.addSubview(favouriteButton)
@@ -60,8 +64,11 @@ class ImageCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(image: String){
-           movieImageView.loadImage(with: image)
+    func configureCell(image: String, movie: MovieAPIListView){
+        id = movie.id
+        movieImageView.loadImage(with: image)
+        watchedButton.isSelected = movie.watched
+        favouriteButton.isSelected = movie.favourite
        }
     
     override func layoutSubviews() {
@@ -73,15 +80,6 @@ class ImageCell: UITableViewCell {
     func setupGradientLayer() {
         gradientLayer.colors = [UIColor.init(red: 0.106, green: 0.106, blue: 0.118, alpha: 0).cgColor, UIColor.init(red: 0.106, green: 0.106, blue: 0.118, alpha: 0.9).cgColor]
         gradientLayer.locations = [0, 1]
-    }
-    
-    @objc func buttonToggle(sender: UIButton) {
-        if favouriteButton.isTouchInside == true {
-            favouriteButton.isSelected.toggle()
-        }
-        if watchedButton.isTouchInside == true {
-            watchedButton.isSelected.toggle()
-        }
     }
     
     //MARK: CONSTRAINTS
@@ -105,4 +103,14 @@ class ImageCell: UITableViewCell {
         }
     }
     
+}
+
+extension ImageCell {
+    @objc func watchedButtonPressed(){
+        delegate?.watchedMoviePressed(with: id)
+    }
+    
+    @objc func favouriteMoviePressed(){
+        delegate?.favouriteMoviePressed(with: id)
+    }
 }

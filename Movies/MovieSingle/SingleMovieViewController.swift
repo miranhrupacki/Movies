@@ -11,16 +11,6 @@ import SnapKit
 
 class SingleMovieViewController: UIViewController {
     
-    let movie: MovieAPIListView
-    
-    var screenData = [MovieCellItem]()
-    
-    let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-    
-    private var dataSource = [MovieAPIListView]()
-    
-    private let networkManager: NetworkManager
-    
     var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -41,6 +31,16 @@ class SingleMovieViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    let movie: MovieAPIListView
+    
+    var screenData = [MovieCellItem]()
+    
+    let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+    
+    private var dataSource = [MovieAPIListView]()
+    
+    private let networkManager: NetworkManager
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -48,7 +48,6 @@ class SingleMovieViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        print(self.movie)
     }
     
     func setupUI(){
@@ -137,7 +136,8 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "ImageCell", for: indexPath) as?
                 ImageCell else {
                     fatalError("The dequeued cell is not an instance of ImageCell.")}
-            cell.configureCell(image: movie.imageURL)
+            cell.configureCell(image: movie.imageURL, movie: movie)
+            cell.delegate = self
 
             return cell
             
@@ -179,5 +179,25 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
             return cell
             
         }
+    }
+}
+
+extension SingleMovieViewController: UserInteraction{
+    func watchedMoviePressed(with id: Int) {
+        guard let movie = dataSource.enumerated().first(where: { (movie) -> Bool in
+            return movie.element.id == id
+        }) else {return}
+        !movie.element.watched ? DatabaseManager.watchedMovie(with: movie.element.id) : DatabaseManager.removeMovieFromWatched(with: movie.element.id)
+        dataSource[movie.offset].watched = !movie.element.watched
+        tableView.reloadRows(at: [IndexPath(row: movie.offset, section: 0)], with: .none)
+    }
+
+    func favouriteMoviePressed(with id: Int) {
+        guard let movie = dataSource.enumerated().first(where: { (movie) -> Bool in
+            return movie.element.id == id
+        }) else {return}
+        !movie.element.favourite ? DatabaseManager.favouritedMovie(with: movie.element.id) : DatabaseManager.removeMovieFromFavourite(with: movie.element.id)
+        dataSource[movie.offset].favourite = !movie.element.favourite
+        tableView.reloadRows(at: [IndexPath(row: movie.offset, section: 0)], with: .none)
     }
 }

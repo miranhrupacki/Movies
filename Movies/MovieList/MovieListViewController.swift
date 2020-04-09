@@ -20,7 +20,7 @@ class MovieListViewController: UIViewController {
     
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     
-    private var dataSource = [MovieAPIListView]()
+    var dataSource = [MovieAPIListView]()
     
     private let networkManager: NetworkManager
     
