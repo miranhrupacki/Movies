@@ -1,5 +1,5 @@
 //
-//  DescriptionCell.swift
+//  DescriptionTableViewCell.swift
 //  Movies
 //
 //  Created by Miran Hrupački on 30/03/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DescriptionCell: UITableViewCell {
+class DescriptionTableViewCell: UITableViewCell {
     
     let movieDescriptionLabel: UILabel = {
         let movieDescription = UILabel()

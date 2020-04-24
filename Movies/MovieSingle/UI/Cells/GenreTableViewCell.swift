@@ -1,5 +1,5 @@
 //
-//  GenreCell.swift
+//  GenreTableViewCell.swift
 //  Movies
 //
 //  Created by Miran Hrupački on 30/03/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GenreCell: UITableViewCell {
+class GenreTableViewCell: UITableViewCell {
     
     let movieGenreLabel: UILabel = {
         let movieGenre = UILabel()

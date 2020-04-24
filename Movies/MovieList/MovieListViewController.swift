@@ -21,11 +21,11 @@ class MovieListViewController: UIViewController {
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     
     var dataSource = [MovieAPIListView]()
-    
+        
     private let networkManager: NetworkManager
     
     struct Cells{
-        static let movieCell = "MovieCell"
+        static let movieCell = "MovieTableViewCell"
     }
     
     override func viewDidLoad() {
@@ -50,30 +50,29 @@ class MovieListViewController: UIViewController {
     }
     
     func getData(){
-        indicator.startAnimating()
-        networkManager.getData(from: "https://api.themoviedb.org/3/movie/now_playing") { [unowned self](movieList) in
-            self.indicator.stopAnimating()
+        networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing") {
+            [unowned self](movieList) in
             if let safeMovieList = movieList{
                 self.dataSource = self.createScreenData(from: safeMovieList)
                 self.tableView.reloadData()
-            }else{
+            } else {
                 
             }
         }
     }
     
-    func getGenres(){
-        indicator.startAnimating()
-        networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
-            self.indicator.stopAnimating()
-            if let safeGenreList = genres{
-                self.dataSource = self.createScreenData(from: safeGenreList)
-                self.tableView.reloadData()
-            }else{
-                
-            }
-        }
-    }
+//    func getGenres(){
+//        indicator.startAnimating()
+//        networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
+//            self.indicator.stopAnimating()
+//            if let safeGenreList = genres{
+//                self.dataSource = self.createScreenData(from: safeGenreList)
+//                self.tableView.reloadData()
+//            }else{
+//                
+//            }
+//        }
+//    }
     
     private func createScreenData(from data: [MovieAPIList]) -> [MovieAPIListView]{
         return data.map { (data) -> MovieAPIListView in
@@ -96,7 +95,7 @@ class MovieListViewController: UIViewController {
         setTableViewDelegates()
         tableView.estimatedRowHeight = 180
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.register(MovieCell.self, forCellReuseIdentifier: Cells.movieCell)
+        tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: Cells.movieCell)
     }
     
     func setupConstraints(){
@@ -119,11 +118,11 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Cells.movieCell) as! MovieCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Cells.movieCell) as! MovieTableViewCell
         
         let movie = dataSource[indexPath.row]
         cell.configure(movie: movie)
-        cell.delegate = self
+        cell.updateDelegate = self
         
         return cell
     }
@@ -131,6 +130,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = dataSource[indexPath.row]
         let vc = SingleMovieViewController(movie: item, networkManager: networkManager)
+        vc.updateDelegate = self
         
         self.navigationController?.pushViewController(vc, animated: true)
     }

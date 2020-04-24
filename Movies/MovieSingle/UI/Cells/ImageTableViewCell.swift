@@ -1,5 +1,5 @@
 //
-//  ImageCell.swift
+//  ImageTableViewCell.swift
 //  Movies
 //
 //  Created by Miran Hrupački on 30/03/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ImageCell: UITableViewCell {
+class ImageTableViewCell: UITableViewCell {
     
     let movieImageView: UIImageView = {
         let movieImage = UIImageView()
@@ -105,7 +105,7 @@ class ImageCell: UITableViewCell {
     
 }
 
-extension ImageCell {
+extension ImageTableViewCell {
     @objc func watchedButtonPressed(){
         delegate?.watchedMoviePressed(with: id)
     }

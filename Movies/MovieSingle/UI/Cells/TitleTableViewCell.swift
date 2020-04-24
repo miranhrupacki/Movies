@@ -1,5 +1,5 @@
 //
-//  TitleCell.swift
+//  TitleTableViewCell.swift
 //  Movies
 //
 //  Created by Miran Hrupački on 30/03/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TitleCell: UITableViewCell {
+class TitleTableViewCell: UITableViewCell {
     
     let movieTitleLabel: UILabel = {
         let movieTitle = UILabel()

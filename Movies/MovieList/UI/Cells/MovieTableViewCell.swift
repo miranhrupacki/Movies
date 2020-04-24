@@ -1,5 +1,5 @@
 //
-//  MovieCell.swift
+//  MovieTableViewCell.swift
 //  Movies
 //
 //  Created by Miran Hrupački on 30/03/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MovieCell: UITableViewCell {
+class MovieTableViewCell: UITableViewCell {
     
     let container: UIView = {
         let container = UIView()
@@ -76,7 +76,7 @@ class MovieCell: UITableViewCell {
     
     let gradientLayer = CAGradientLayer()
     
-    weak var delegate: UserInteraction?
+    weak var updateDelegate: UserInteraction?
     
     internal var id: Int = 0
     
@@ -196,12 +196,12 @@ extension UIImageView{
     }
 }
 
-extension MovieCell {
+extension MovieTableViewCell {
     @objc func watchedButtonPressed(){
-        delegate?.watchedMoviePressed(with: id)
+        updateDelegate?.watchedMoviePressed(with: id)
     }
     
     @objc func favouriteMoviePressed(){
-        delegate?.favouriteMoviePressed(with: id)
+        updateDelegate?.favouriteMoviePressed(with: id)
     }
 }

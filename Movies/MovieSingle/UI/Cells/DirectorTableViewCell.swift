@@ -1,5 +1,5 @@
 //
-//  DirectorCell.swift
+//  DirectorTableViewCell.swift
 //  Movies
 //
 //  Created by Miran Hrupački on 30/03/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DirectorCell: UITableViewCell {
+class DirectorTableViewCell: UITableViewCell {
     
     let movieDirectorLabel: UILabel = {
         let movieDirector = UILabel()

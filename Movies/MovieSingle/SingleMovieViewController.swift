@@ -31,14 +31,14 @@ class SingleMovieViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    let movie: MovieAPIListView
+    var movie: MovieAPIListView
     
     var screenData = [MovieCellItem]()
     
+    weak var updateDelegate: UserInteraction?
+   
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-    
-    private var dataSource = [MovieAPIListView]()
-    
+        
     private let networkManager: NetworkManager
     
     required init?(coder: NSCoder) {
@@ -72,11 +72,11 @@ class SingleMovieViewController: UIViewController {
         tableView.estimatedRowHeight = 255
         tableView.rowHeight = UITableView.automaticDimension
         
-        tableView.register(ImageCell.self, forCellReuseIdentifier: "ImageCell")
-        tableView.register(TitleCell.self, forCellReuseIdentifier: "TitleCell")
-        tableView.register(GenreCell.self, forCellReuseIdentifier: "GenreCell")
-        tableView.register(DirectorCell.self, forCellReuseIdentifier: "DirectorCell")
-        tableView.register(DescriptionCell.self, forCellReuseIdentifier: "DescriptionCell")
+        tableView.register(ImageTableViewCell.self, forCellReuseIdentifier: "ImageCell")
+        tableView.register(TitleTableViewCell.self, forCellReuseIdentifier: "TitleCell")
+        tableView.register(GenreTableViewCell.self, forCellReuseIdentifier: "GenreCell")
+        tableView.register(DirectorTableViewCell.self, forCellReuseIdentifier: "DirectorCell")
+        tableView.register(DescriptionTableViewCell.self, forCellReuseIdentifier: "DescriptionCell")
     }
     
     func setTableViewDelegates() {
@@ -85,11 +85,11 @@ class SingleMovieViewController: UIViewController {
     }
     
     func insertDirector(movieId: Int){
-        networkManager.getMovieDirector(from: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId){ (director) in
-            if let safeDirector = director{
+        networkManager.getMovieDirector(url: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId){ (director) in
+            if let safeDirector = director {
                 self.screenData = self.createScreenData(movie: self.movie, director: safeDirector)
                 self.tableView.reloadData()
-            }else {
+            } else {
                 
             }
         }
@@ -134,7 +134,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
         case .image:
             //guard item.data is UIImage else {return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "ImageCell", for: indexPath) as?
-                ImageCell else {
+                ImageTableViewCell else {
                     fatalError("The dequeued cell is not an instance of ImageCell.")}
             cell.configureCell(image: movie.imageURL, movie: movie)
             cell.delegate = self
@@ -144,7 +144,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
         case .title:
             guard let safeData = item.data as? String else {return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "TitleCell", for: indexPath) as?
-                TitleCell else {
+                TitleTableViewCell else {
                     fatalError("The dequeued cell is not an instance of TitleCell.")}
             cell.configureCell(title: safeData)
             
@@ -163,7 +163,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
         case .director:
             guard let safeData = item.data as? String else {return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DirectorCell", for: indexPath) as?
-                DirectorCell else {
+                DirectorTableViewCell else {
                     fatalError("The dequeued cell is not an instance of DirectorCell.")}
             cell.configureCell(director: safeData)
 
@@ -172,7 +172,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
         case .description:
             guard let safeData = item.data as? String else{return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DescriptionCell", for: indexPath) as?
-                DescriptionCell else {
+                DescriptionTableViewCell else {
                     fatalError("The dequeued cell is not an instance of DescriptionCell.")}
             cell.configureCell(description: safeData)
             
@@ -184,20 +184,16 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
 
 extension SingleMovieViewController: UserInteraction{
     func watchedMoviePressed(with id: Int) {
-        guard let movie = dataSource.enumerated().first(where: { (movie) -> Bool in
-            return movie.element.id == id
-        }) else {return}
-        !movie.element.watched ? DatabaseManager.watchedMovie(with: movie.element.id) : DatabaseManager.removeMovieFromWatched(with: movie.element.id)
-        dataSource[movie.offset].watched = !movie.element.watched
-        tableView.reloadRows(at: [IndexPath(row: movie.offset, section: 0)], with: .none)
+        
+        movie.watched = !movie.watched
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        updateDelegate?.watchedMoviePressed(with: id)
     }
 
     func favouriteMoviePressed(with id: Int) {
-        guard let movie = dataSource.enumerated().first(where: { (movie) -> Bool in
-            return movie.element.id == id
-        }) else {return}
-        !movie.element.favourite ? DatabaseManager.favouritedMovie(with: movie.element.id) : DatabaseManager.removeMovieFromFavourite(with: movie.element.id)
-        dataSource[movie.offset].favourite = !movie.element.favourite
-        tableView.reloadRows(at: [IndexPath(row: movie.offset, section: 0)], with: .none)
+
+        movie.favourite = !movie.favourite
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        updateDelegate?.favouriteMoviePressed(with: id)
     }
 }
