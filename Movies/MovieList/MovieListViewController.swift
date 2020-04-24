@@ -18,6 +18,12 @@ class MovieListViewController: UIViewController {
         return tableView
     }()
     
+    let alert: UIAlertController = {
+        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        return alert
+    }()
+    
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     
     var dataSource = [MovieAPIListView]()
@@ -56,7 +62,9 @@ class MovieListViewController: UIViewController {
                 self.dataSource = self.createScreenData(from: safeMovieList)
                 self.tableView.reloadData()
             } else {
-                
+                self.alert.title = "Movies error"
+                self.alert.message = "Something went wrong, movies couldn't load"
+                self.present(self.alert, animated: true, completion: nil)
             }
         }
     }

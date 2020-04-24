@@ -25,6 +25,12 @@ class SingleMovieViewController: UIViewController {
         return backButton
     }()
     
+    let alert: UIAlertController = {
+        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        return alert
+    }()
+    
     init(movie: MovieAPIListView, networkManager: NetworkManager){
         self.movie = movie
         self.networkManager = networkManager
@@ -90,7 +96,9 @@ class SingleMovieViewController: UIViewController {
                 self.screenData = self.createScreenData(movie: self.movie, director: safeDirector)
                 self.tableView.reloadData()
             } else {
-                
+                self.alert.title = "Director error"
+                self.alert.message = "Something went wrong, directors couldn't load"
+                self.present(self.alert, animated: true, completion: nil)
             }
         }
     }
