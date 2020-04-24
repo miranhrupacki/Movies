@@ -134,18 +134,12 @@ class MovieTableViewCell: UITableViewCell {
     func setupConstraints(){
         
         container.snp.makeConstraints {(maker) in
-            maker.top.equalToSuperview().inset(8)
-            maker.bottom.equalToSuperview().inset(8)
-            maker.leading.equalToSuperview().inset(15)
-            maker.trailing.equalToSuperview().inset(15)
+            maker.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 15, bottom: 8, right: 15))
         }
         
         movieImageView.snp.makeConstraints{(maker) in
-            maker.top.equalToSuperview()
-            maker.bottom.equalToSuperview()
-            maker.leading.equalToSuperview()
-            maker.width.equalTo(155)
-            maker.height.equalTo(155)
+            maker.top.bottom.leading.equalToSuperview()
+            maker.width.height.equalTo(155)
         }
         
         movieTitleLabel.snp.makeConstraints{(maker) in
@@ -175,23 +169,6 @@ class MovieTableViewCell: UITableViewCell {
             maker.top.equalToSuperview().inset(111)
             maker.leading.equalTo(movieImageView.snp.trailing).inset(-90)
             maker.trailing.equalToSuperview().inset(65)
-        }
-    }
-}
-
-extension UIImageView{
-    
-     func loadImage(with imageURL: String){
-        if let imageURL = URL(string: "https://image.tmdb.org/t/p/w1280"+imageURL) {
-            DispatchQueue.global().async {
-                let data = try? Data(contentsOf: imageURL)
-                if let data = data {
-                    let safeImage = UIImage(data: data)
-                    DispatchQueue.main.async {[weak self] in
-                        self?.image = safeImage
-                    }
-                }
-            }
         }
     }
 }

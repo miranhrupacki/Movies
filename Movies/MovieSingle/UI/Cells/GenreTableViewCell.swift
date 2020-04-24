@@ -43,10 +43,7 @@ class GenreTableViewCell: UITableViewCell {
     func setupConstraints() {
         
         movieGenreLabel.snp.makeConstraints{(maker) in
-            maker.top.equalToSuperview().inset(5)
-            maker.bottom.equalToSuperview()
-            maker.leading.equalToSuperview().inset(25)
-            maker.trailing.equalToSuperview().inset(25)
+            maker.edges.equalToSuperview().inset(UIEdgeInsets(top: 5, left: 25, bottom: 0, right: 25))
         }
     }
 }

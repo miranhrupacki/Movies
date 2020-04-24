@@ -25,12 +25,6 @@ class SingleMovieViewController: UIViewController {
         return backButton
     }()
     
-    let alert: UIAlertController = {
-        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
-        return alert
-    }()
-    
     init(movie: MovieAPIListView, networkManager: NetworkManager){
         self.movie = movie
         self.networkManager = networkManager
@@ -96,9 +90,7 @@ class SingleMovieViewController: UIViewController {
                 self.screenData = self.createScreenData(movie: self.movie, director: safeDirector)
                 self.tableView.reloadData()
             } else {
-                self.alert.title = "Director error"
-                self.alert.message = "Something went wrong, directors couldn't load"
-                self.present(self.alert, animated: true, completion: nil)
+                self.showAlertWith(title: "Network error", message: "Something went wrong, directors couldn't load")
             }
         }
     }
@@ -120,6 +112,8 @@ class SingleMovieViewController: UIViewController {
         }
         
         backButton.snp.makeConstraints { (maker) in
+            
+//            maker.edges.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 35, left: 21, bottom: 0, right: 330))
             maker.top.equalTo(view.safeAreaLayoutGuide).inset(35)
             maker.leading.equalTo(view.safeAreaLayoutGuide).inset(21)
             maker.trailing.equalTo(view.safeAreaLayoutGuide).inset(330)
@@ -145,7 +139,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
                 ImageTableViewCell else {
                     fatalError("The dequeued cell is not an instance of ImageCell.")}
             cell.configureCell(image: movie.imageURL, movie: movie)
-            cell.delegate = self
+            cell.updateDelegate = self
 
             return cell
             

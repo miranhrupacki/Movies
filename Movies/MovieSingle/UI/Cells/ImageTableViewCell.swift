@@ -39,7 +39,7 @@ class ImageTableViewCell: UITableViewCell {
 
     let gradientLayer = CAGradientLayer()
     
-    weak var delegate: UserInteraction?
+    weak var updateDelegate: UserInteraction?
     
     internal var id: Int = 0
 
@@ -91,6 +91,8 @@ class ImageTableViewCell: UITableViewCell {
         }
         
         favouriteButton.snp.makeConstraints { (maker) in
+//            maker.edges.equalToSuperview().inset(UIEdgeInsets(top: 35, left: 325, bottom: 0, right: 25))
+
             maker.top.equalToSuperview().inset(35)
             maker.leading.equalToSuperview().inset(325)
             maker.trailing.equalToSuperview().inset(15)
@@ -102,15 +104,14 @@ class ImageTableViewCell: UITableViewCell {
             maker.trailing.equalToSuperview().inset(65)
         }
     }
-    
 }
 
 extension ImageTableViewCell {
     @objc func watchedButtonPressed(){
-        delegate?.watchedMoviePressed(with: id)
+        updateDelegate?.watchedMoviePressed(with: id)
     }
     
     @objc func favouriteMoviePressed(){
-        delegate?.favouriteMoviePressed(with: id)
+        updateDelegate?.favouriteMoviePressed(with: id)
     }
 }
