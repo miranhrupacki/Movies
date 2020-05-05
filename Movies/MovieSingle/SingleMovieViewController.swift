@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import RxSwift
 
 class SingleMovieViewController: UIViewController {
     
@@ -31,14 +32,16 @@ class SingleMovieViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    let disposeBag = DisposeBag()
+    
     var movie: MovieAPIListView
     
     var screenData = [MovieCellItem]()
     
     weak var updateDelegate: UserInteraction?
-   
+    
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-        
+    
     private let networkManager: NetworkManager
     
     required init?(coder: NSCoder) {
@@ -85,21 +88,23 @@ class SingleMovieViewController: UIViewController {
     }
     
     func insertDirector(movieId: Int){
-        networkManager.getMovieDirector(url: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId){ (director) in
-            if let safeDirector = director {
-                self.screenData = self.createScreenData(movie: self.movie, director: safeDirector)
-                self.tableView.reloadData()
-            } else {
-                self.showAlertWith(title: "Network error", message: "Something went wrong, directors couldn't load")
-            }
-        }
+        indicator.startAnimating()
+        networkManager.getMovieDirector(url: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId)
+            .subscribe(
+                onNext: {[unowned self](directorList) in
+                    self.indicator.stopAnimating()
+                    self.screenData = self.createScreenData(movie: self.movie, director: directorList)
+                    self.tableView.reloadData()
+                }, onError: {[unowned self] error in
+                    self.showAlertWith(title: "Network error", message: "Something went wrong, directors couldn't load")
+            }).disposed(by: disposeBag)
     }
     
     func createScreenData(movie: MovieAPIListView, director: Director)  -> [MovieCellItem] {
         var screenData: [MovieCellItem] = []
         screenData.append(MovieCellItem(type: .image, data: movie.imageURL))
         screenData.append(MovieCellItem(type: .title, data: movie.title))
-//        screenData.append(MovieCellItem(type: .genre, data: movie.genre))
+        //        screenData.append(MovieCellItem(type: .genre, data: movie.genre))
         screenData.append(MovieCellItem(type: .director, data: director.name))
         screenData.append(MovieCellItem(type: .description, data: movie.description))
         return screenData
@@ -112,8 +117,6 @@ class SingleMovieViewController: UIViewController {
         }
         
         backButton.snp.makeConstraints { (maker) in
-            
-//            maker.edges.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 35, left: 21, bottom: 0, right: 330))
             maker.top.equalTo(view.safeAreaLayoutGuide).inset(35)
             maker.leading.equalTo(view.safeAreaLayoutGuide).inset(21)
             maker.trailing.equalTo(view.safeAreaLayoutGuide).inset(330)
@@ -140,7 +143,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
                     fatalError("The dequeued cell is not an instance of ImageCell.")}
             cell.configureCell(image: movie.imageURL, movie: movie)
             cell.updateDelegate = self
-
+            
             return cell
             
         case .title:
@@ -152,23 +155,23 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
             
             return cell
             
-//        case .genre:
-//            guard let safeData = item.data as? String else {return UITableViewCell()}
-//            guard let cell = tableView.dequeueReusableCell(withIdentifier: "GenreCell", for: indexPath) as?
-//                GenreCell else {
-//                    fatalError("The dequeued cell is not an instance of GenreCell.")}
-//
-//            cell.configureCell(genre: safeData)
-//
-//            return cell
-//
+            //        case .genre:
+            //            guard let safeData = item.data as? String else {return UITableViewCell()}
+            //            guard let cell = tableView.dequeueReusableCell(withIdentifier: "GenreCell", for: indexPath) as?
+            //                GenreCell else {
+            //                    fatalError("The dequeued cell is not an instance of GenreCell.")}
+            //
+            //            cell.configureCell(genre: safeData)
+            //
+            //            return cell
+        //
         case .director:
             guard let safeData = item.data as? String else {return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DirectorCell", for: indexPath) as?
                 DirectorTableViewCell else {
                     fatalError("The dequeued cell is not an instance of DirectorCell.")}
             cell.configureCell(director: safeData)
-
+            
             return cell
             
         case .description:
@@ -191,9 +194,9 @@ extension SingleMovieViewController: UserInteraction{
         tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         updateDelegate?.watchedMoviePressed(with: id)
     }
-
+    
     func favouriteMoviePressed(with id: Int) {
-
+        
         movie.favourite = !movie.favourite
         tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         updateDelegate?.favouriteMoviePressed(with: id)

@@ -8,8 +8,14 @@
 
 import Foundation
 import Alamofire
+import RxSwift
+import RxCocoa
 
 class NetworkManager{
+    
+    enum NetworkError: Error {
+        case error
+    }
     
     let parameters: Parameters = {
         var parameters = Parameters()
@@ -17,44 +23,77 @@ class NetworkManager{
         return parameters
     }()
     
-    func getData(url: String, _ completed: @escaping([MovieAPIList]?) -> Void){
-        
-        AF.request(url, parameters: parameters).validate().responseDecodable(of: Response<[MovieAPIList]?>.self, decoder: SerializationManager.jsonDecoder) { (movieResponse) in
-            do {
-                let response = try movieResponse.result.get()
-                completed(response.results!)
-            } catch let error{
-                debugPrint("Error happed: ", error.localizedDescription)
-                completed(nil)
+    func getData(url: String) -> Observable<[MovieAPIList]> {
+        return Observable.create { observer in
+            AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<[MovieAPIList]>.self, decoder: SerializationManager.jsonDecoder) { (movieResponse) in
+                switch movieResponse.result {
+                case .success:
+                    do {
+                        let response = try movieResponse.result.get()
+                        guard let safeResults = response.results else {
+                            observer.onError(NetworkError.error)
+                            return
+                        }
+                        observer.onNext(safeResults)
+                        observer.onCompleted()
+                    }
+                    catch let error{
+                        debugPrint("Error happed: ", error.localizedDescription)
+                    }
+                case.failure(let error):
+                    observer.onError(error)
+                }
             }
+            return Disposables.create()
         }
     }
     
-    func getMovieDirector(url: String, movieId: Int, _ completed: @escaping(Director?) -> Void){
-        
-        AF.request(url, parameters: parameters).validate().responseDecodable(of: Response<[Crew]>.self, decoder: SerializationManager.jsonDecoder) { (directorResponse) in
-            do {
-                let response = try directorResponse.result.get()
-                let index = response.crew!.firstIndex(where: {
-                    (crewMember) in crewMember.job == "Director"
-                })
-                completed ((index == nil) ? Director(name: " not found", movieId: movieId) : Director(name: response.crew![index!].name, movieId: movieId))
-            } catch {
-                debugPrint("Error happed: ", error.localizedDescription)
-                completed(nil)
+    func getMovieDirector(url: String, movieId: Int) -> Observable<Director>{
+        return Observable.create { observer in
+            AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<[Crew]>.self, decoder: SerializationManager.jsonDecoder) { (directorResponse) in
+                switch directorResponse.result {
+                case .success:
+                    do {
+                        let response = try directorResponse.result.get()
+                        let index = response.crew!.firstIndex(where: {
+                            (crewMember) in crewMember.job == "Director"
+                        })
+                        observer.onNext((index == nil) ? Director(name: " not found", movieId: movieId) : Director(name: response.crew![index!].name, movieId: movieId))
+                        observer.onCompleted()
+                    }
+                    catch {
+                        debugPrint("Error happed: ", error.localizedDescription)
+                    }
+                case .failure (let error):
+                    observer.onError(error)
+                }
             }
+            return Disposables.create()
         }
     }
     
-    func getGenres(url: String,_ completed: @escaping([Genres]?) -> Void){
-        AF.request(url, parameters: parameters).validate().responseDecodable(of: Response<[Genres]>.self, decoder: SerializationManager.jsonDecoder) { (genreResponse) in
-            do {
-                let response = try genreResponse.result.get()
-                completed(response.genres)
-            }catch {
-                debugPrint("Error happened: ", error.localizedDescription)
-                completed(nil)
+    func getGenres(url: String) -> Observable<[Genres]>{
+        return Observable.create { observer in
+            AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<[Genres]>.self, decoder: SerializationManager.jsonDecoder) { (genreResponse) in
+                switch genreResponse.result {
+                case .success:
+                    do {
+                        let response = try genreResponse.result.get()
+                        guard let safeGenres = response.results else {
+                            observer.onError(NetworkError.error)
+                            return
+                        }
+                        observer.onNext(safeGenres)
+                        observer.onCompleted()
+                    }
+                    catch let error{
+                        debugPrint("Error happened: ", error.localizedDescription)
+                    }
+                case .failure(let error):
+                    observer.onError(error)
+                }
             }
+            return Disposables.create()
         }
     }
 }

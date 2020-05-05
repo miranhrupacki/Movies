@@ -8,6 +8,8 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class MovieListViewController: UIViewController {
     
@@ -17,11 +19,12 @@ class MovieListViewController: UIViewController {
         tableView.backgroundColor = .init(red: 0.221, green: 0.221, blue: 0.221, alpha: 1)
         return tableView
     }()
+    let disposeBag = DisposeBag()
     
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
     
     var dataSource = [MovieAPIListView]()
-        
+    
     private let networkManager: NetworkManager
     
     struct Cells{
@@ -50,29 +53,30 @@ class MovieListViewController: UIViewController {
     }
     
     func getData(){
-        networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing") {
-            [unowned self](movieList) in
-            if let safeMovieList = movieList{
-                self.dataSource = self.createScreenData(from: safeMovieList)
-                self.tableView.reloadData()
-            } else {
-                self.showAlertWith(title: "Network error", message: "Something went wrong, movies couldn't load")
-            }
-        }
+        indicator.startAnimating()
+        networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing")
+            .subscribe(
+                onNext: { [unowned self](movieList) in
+                    self.indicator.stopAnimating()
+                    self.dataSource = self.createScreenData(from: movieList)
+                    self.tableView.reloadData()
+                }, onError: { [unowned self]error in
+                    self.showAlertWith(title: "Movies network error", message: "Movies couldn't load")
+            }).disposed(by: disposeBag)
     }
     
-//    func getGenres(){
-//        indicator.startAnimating()
-//        networkManager.getData(from: "https://api.themoviedb.org/3/genre/movie/list") { [unowned self](genres) in
-//            self.indicator.stopAnimating()
-//            if let safeGenreList = genres{
-//                self.dataSource = self.createScreenData(from: safeGenreList)
-//                self.tableView.reloadData()
-//            }else{
-//                
-//            }
-//        }
-//    }
+        func getGenres(){
+            indicator.startAnimating()
+            networkManager.getData(url: "https://api.themoviedb.org/3/genre/movie/list")
+            .subscribe(
+                onNext: { [unowned self](genreList) in
+                    self.indicator.stopAnimating()
+                    self.dataSource = self.createScreenData(from: genreList)
+                    self.tableView.reloadData()
+                }, onError: { [unowned self]error in
+                        self.showAlertWith(title: "Genres network error", message: "Genres couldn't load")
+                }).disposed(by: disposeBag)
+        }
     
     private func createScreenData(from data: [MovieAPIList]) -> [MovieAPIListView]{
         return data.map { (data) -> MovieAPIListView in
