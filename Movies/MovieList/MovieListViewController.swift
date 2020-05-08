@@ -49,48 +49,56 @@ class MovieListViewController: UIViewController {
         configureTableView()
         
         setupConstraints()
+        setupSubscriptions()
+    }
+    
+    func setupSubscriptions() {
         getData()
+            .subscribe(onNext: { [unowned self] in
+                self.indicator.stopAnimating()
+                self.dataSource = $0
+                self.tableView.reloadData()})
+            .disposed(by: disposeBag)
     }
     
-    func getData(){
+    private func getData() -> Observable<[MovieAPIListView]>{
         indicator.startAnimating()
-        networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing")
-            .subscribe(
-                onNext: { [unowned self](movieList) in
-                    self.indicator.stopAnimating()
-                    self.dataSource = self.createScreenData(from: movieList)
-                    self.tableView.reloadData()
-                }, onError: { [unowned self]error in
-                    self.showAlertWith(title: "Movies network error", message: "Movies couldn't load")
-            }).disposed(by: disposeBag)
+        return Observable.zip(self.networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing") as Observable<[MovieAPIList]>, self.networkManager.getData(url: "https://api.themoviedb.org/3/genre/movie/list") as Observable<[Genres]>)
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .observeOn(MainScheduler.instance)
+            .flatMap{ movieInfo in
+                return Observable<[MovieAPIListView]>.create{ observer in
+                    observer.onNext(self.createScreenData(data: movieInfo))
+                    return Disposables.create()
+                }
+        }
     }
     
-        func getGenres(){
-            indicator.startAnimating()
-            networkManager.getData(url: "https://api.themoviedb.org/3/genre/movie/list")
-            .subscribe(
-                onNext: { [unowned self](genreList) in
-                    self.indicator.stopAnimating()
-                    self.dataSource = self.createScreenData(from: genreList)
-                    self.tableView.reloadData()
-                }, onError: { [unowned self]error in
-                        self.showAlertWith(title: "Genres network error", message: "Genres couldn't load")
-                }).disposed(by: disposeBag)
+    private func createScreenData(data: (list: [MovieAPIList], genres: [Genres])) -> ([MovieAPIListView]){
+        
+        for movie in data.list{
+        var genreList: [String] = []
+            for genre in data.genres{
+            if movie.genreIds.contains(genre.id){
+                genreList.append(genre.name)
+            }
         }
-    
-    private func createScreenData(from data: [MovieAPIList]) -> [MovieAPIListView]{
-        return data.map { (data) -> MovieAPIListView in
+            return data.list.map { (data) -> MovieAPIListView in
+            
             let year = DateUtils.getYearFromDate(stringDate: data.releaseDate)
             let watched = DatabaseManager.isMovieWatched(with: data.id)
             let favourite = DatabaseManager.isMovieFovurited(with: data.id)
             return MovieAPIListView(id: data.id,
                                     title: data.originalTitle,
-                                    imageURL: data.posterPath,
+                                    imageURL: data.posterPath ?? "",
                                     description: data.overview,
                                     year: year,
                                     watched: watched,
-                                    favourite: favourite)
+                                    favourite: favourite,
+                                    genres: genreList)
+            }
         }
+        return dataSource
     }
     
     func configureTableView() {

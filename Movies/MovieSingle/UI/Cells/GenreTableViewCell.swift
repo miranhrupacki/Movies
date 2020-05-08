@@ -35,9 +35,17 @@ class GenreTableViewCell: UITableViewCell {
         setupConstraints()
     }
     
-    func configureCell(genre: String){
+    func configureCell(text: [String]){
+        var genreText = ""
+        for (index, genre) in text.enumerated(){
+            if index == 0{
+                genreText = genreText + genre
+            }else{
+                genreText = genreText + ", \(genre)"
+            }
+        }
         selectionStyle = .none
-        movieGenreLabel.text = genre
+        movieGenreLabel.text = genreText
     }
     
     func setupConstraints() {

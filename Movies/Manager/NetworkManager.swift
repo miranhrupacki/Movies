@@ -23,31 +23,30 @@ class NetworkManager{
         return parameters
     }()
     
-    func getData(url: String) -> Observable<[MovieAPIList]> {
-        return Observable.create { observer in
-            AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<[MovieAPIList]>.self, decoder: SerializationManager.jsonDecoder) { (movieResponse) in
-                switch movieResponse.result {
+    func getData<T: Codable>(url: String) -> Observable<T>{
+        return Observable.create{ observer in
+            AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<T>.self, decoder: SerializationManager.jsonDecoder ) { (movieResponse) in
+                switch movieResponse.result{
                 case .success:
-                    do {
+                    do{
                         let response = try movieResponse.result.get()
-                        guard let safeResults = response.results else {
-                            observer.onError(NetworkError.error)
-                            return
+                        if response.genres != nil {
+                            observer.onNext(response.genres!)
+                        } else {
+                            observer.onNext(response.results!)
+                            observer.onCompleted()
                         }
-                        observer.onNext(safeResults)
-                        observer.onCompleted()
+                    }catch let error{
+                        observer.onError(error)
                     }
-                    catch let error{
-                        debugPrint("Error happed: ", error.localizedDescription)
-                    }
-                case.failure(let error):
+                case .failure(let error):
                     observer.onError(error)
                 }
             }
             return Disposables.create()
         }
     }
-    
+
     func getMovieDirector(url: String, movieId: Int) -> Observable<Director>{
         return Observable.create { observer in
             AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<[Crew]>.self, decoder: SerializationManager.jsonDecoder) { (directorResponse) in
@@ -71,29 +70,9 @@ class NetworkManager{
             return Disposables.create()
         }
     }
-    
-    func getGenres(url: String) -> Observable<[Genres]>{
-        return Observable.create { observer in
-            AF.request(url, parameters: self.parameters).validate().responseDecodable(of: Response<[Genres]>.self, decoder: SerializationManager.jsonDecoder) { (genreResponse) in
-                switch genreResponse.result {
-                case .success:
-                    do {
-                        let response = try genreResponse.result.get()
-                        guard let safeGenres = response.results else {
-                            observer.onError(NetworkError.error)
-                            return
-                        }
-                        observer.onNext(safeGenres)
-                        observer.onCompleted()
-                    }
-                    catch let error{
-                        debugPrint("Error happened: ", error.localizedDescription)
-                    }
-                case .failure(let error):
-                    observer.onError(error)
-                }
-            }
-            return Disposables.create()
-        }
-    }
 }
+
+
+
+
+

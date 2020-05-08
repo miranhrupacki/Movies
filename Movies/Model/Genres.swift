@@ -12,3 +12,7 @@ public struct Genres: Codable {
     let id: Int
     let name: String
 }
+
+public struct MovieGenres: Codable {
+    let genres: [Genres]
+}

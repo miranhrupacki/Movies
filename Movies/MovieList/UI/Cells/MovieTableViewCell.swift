@@ -115,9 +115,19 @@ class MovieTableViewCell: UITableViewCell {
     }
     
     func configure(movie: MovieAPIListView){
+        
+        var genreText = ""
+        for (index, genre) in movie.genres.enumerated(){
+            if index == 0{
+                genreText = genreText + genre
+            }else{
+                genreText = genreText + ", \(genre)"
+            }
+        }
+        
         id = movie.id
         movieTitleLabel.text = movie.title
-//        movieGenreLabel.text = movie.genreIds
+        movieGenreLabel.text = genreText
         movieImageView.loadImage(with: movie.imageURL)
         movieYearLabel.text = movie.year
         watchedButton.isSelected = movie.watched

@@ -39,9 +39,9 @@ class SingleMovieViewController: UIViewController {
     var screenData = [MovieCellItem]()
     
     weak var updateDelegate: UserInteraction?
-    
+   
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-    
+        
     private let networkManager: NetworkManager
     
     required init?(coder: NSCoder) {
@@ -92,7 +92,6 @@ class SingleMovieViewController: UIViewController {
         networkManager.getMovieDirector(url: "https://api.themoviedb.org/3/movie/\(movieId)/credits", movieId: movieId)
             .subscribe(
                 onNext: {[unowned self](directorList) in
-                    self.indicator.stopAnimating()
                     self.screenData = self.createScreenData(movie: self.movie, director: directorList)
                     self.tableView.reloadData()
                 }, onError: {[unowned self] error in
@@ -104,7 +103,7 @@ class SingleMovieViewController: UIViewController {
         var screenData: [MovieCellItem] = []
         screenData.append(MovieCellItem(type: .image, data: movie.imageURL))
         screenData.append(MovieCellItem(type: .title, data: movie.title))
-        //        screenData.append(MovieCellItem(type: .genre, data: movie.genre))
+        screenData.append(MovieCellItem(type: .genre, data: movie.genres))
         screenData.append(MovieCellItem(type: .director, data: director.name))
         screenData.append(MovieCellItem(type: .description, data: movie.description))
         return screenData
@@ -143,7 +142,7 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
                     fatalError("The dequeued cell is not an instance of ImageCell.")}
             cell.configureCell(image: movie.imageURL, movie: movie)
             cell.updateDelegate = self
-            
+
             return cell
             
         case .title:
@@ -155,23 +154,22 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
             
             return cell
             
-            //        case .genre:
-            //            guard let safeData = item.data as? String else {return UITableViewCell()}
-            //            guard let cell = tableView.dequeueReusableCell(withIdentifier: "GenreCell", for: indexPath) as?
-            //                GenreCell else {
-            //                    fatalError("The dequeued cell is not an instance of GenreCell.")}
-            //
-            //            cell.configureCell(genre: safeData)
-            //
-            //            return cell
-        //
+        case .genre:
+            guard let safeData = item.data as? [String] else {return UITableViewCell()}
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "GenreCell", for: indexPath) as?
+                GenreTableViewCell else {
+                    fatalError("The dequeued cell is not an instance of GenreCell.")}
+            cell.configureCell(text: safeData)
+
+            return cell
+
         case .director:
             guard let safeData = item.data as? String else {return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DirectorCell", for: indexPath) as?
                 DirectorTableViewCell else {
                     fatalError("The dequeued cell is not an instance of DirectorCell.")}
             cell.configureCell(director: safeData)
-            
+
             return cell
             
         case .description:
@@ -194,9 +192,9 @@ extension SingleMovieViewController: UserInteraction{
         tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         updateDelegate?.watchedMoviePressed(with: id)
     }
-    
+
     func favouriteMoviePressed(with id: Int) {
-        
+
         movie.favourite = !movie.favourite
         tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         updateDelegate?.favouriteMoviePressed(with: id)

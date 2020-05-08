@@ -12,13 +12,13 @@ public struct MovieAPIList: Codable{
     let id: Int
     let overview: String
     let releaseDate: String
-    let genreIds: [Int] //[Genres]
+    let genreIds: [Int]
     let originalTitle: String
     let originalLanguage: String
-    let posterPath: String
+    let posterPath: String?
     let title: String
     let adult: Bool
-    let backdropPath: String
+    let backdropPath: String?
     let video: Bool
     let voteAverage: Float
 }
