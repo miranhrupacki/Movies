@@ -38,10 +38,9 @@ class ImageTableViewCell: UITableViewCell {
     }()
 
     let gradientLayer = CAGradientLayer()
-    
-    weak var updateDelegate: UserInteraction?
-    
     internal var id: Int = 0
+    var favouritePressed: ((Int)-> Void)?
+    var watchedPressed: ((Int)-> Void)?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?){
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -108,10 +107,10 @@ class ImageTableViewCell: UITableViewCell {
 
 extension ImageTableViewCell {
     @objc func watchedButtonPressed(){
-        updateDelegate?.watchedMoviePressed(with: id)
+        watchedPressed?(id)
     }
     
     @objc func favouriteMoviePressed(){
-        updateDelegate?.favouriteMoviePressed(with: id)
+        favouritePressed?(id)
     }
 }

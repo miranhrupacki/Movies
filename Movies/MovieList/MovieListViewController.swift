@@ -19,13 +19,14 @@ class MovieListViewController: UIViewController {
         tableView.backgroundColor = .init(red: 0.221, green: 0.221, blue: 0.221, alpha: 1)
         return tableView
     }()
+    
     let disposeBag = DisposeBag()
-    
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-    
     var dataSource = [MovieAPIListView]()
-    
     private let networkManager: NetworkManager
+    let movieReplaySubject = ReplaySubject<()>.create(bufferSize: 1)
+    let watchedButtonSubject = PublishSubject<Int>()
+    let favouriteButtonSubject = PublishSubject<Int>()
     
     struct Cells{
         static let movieCell = "MovieTableViewCell"
@@ -34,6 +35,8 @@ class MovieListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupSubscriptions()
+        movieReplaySubject.onNext(())
     }
     
     init(networkManager: NetworkManager){
@@ -47,63 +50,85 @@ class MovieListViewController: UIViewController {
     
     func setupUI(){
         configureTableView()
-        
         setupConstraints()
-        setupSubscriptions()
     }
     
     func setupSubscriptions() {
-        getData()
-            .subscribe(onNext: { [unowned self] in
-                self.indicator.stopAnimating()
-                self.dataSource = $0
-                self.tableView.reloadData()})
-            .disposed(by: disposeBag)
+        getData(for: movieReplaySubject).disposed(by: disposeBag)
+        initializeWatchedSubject(for: watchedButtonSubject).disposed(by: disposeBag)
+        initializeFavouriteSubject(for: favouriteButtonSubject).disposed(by: disposeBag)
     }
     
-    private func getData() -> Observable<[MovieAPIListView]>{
-        indicator.startAnimating()
-        return Observable.zip(self.networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing") as Observable<[MovieAPIList]>, self.networkManager.getData(url: "https://api.themoviedb.org/3/genre/movie/list") as Observable<[Genres]>)
+    private func getData(for subject: ReplaySubject<()>) -> Disposable{
+        return subject
+            .flatMap { (_) -> Observable<([MovieAPIList], [Genres])> in
+                DispatchQueue.main.async {
+                    self.indicator.startAnimating()
+                }
+                return Observable.zip(self.networkManager.getData(url: "https://api.themoviedb.org/3/movie/now_playing") as Observable<[MovieAPIList]>, self.networkManager.getData(url: "https://api.themoviedb.org/3/genre/movie/list") as Observable<[Genres]>)
+        }
+        .map({ (data) -> [MovieAPIListView] in
+            return self.createScreenData(data: data)
+        })
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(MainScheduler.instance)
-            .flatMap{ movieInfo in
-                return Observable<[MovieAPIListView]>.create{ observer in
-                    observer.onNext(self.createScreenData(data: movieInfo))
-                    return Disposables.create()
+            .subscribe(onNext: { [unowned self](data) in
+                DispatchQueue.main.async {
+                    self.indicator.stopAnimating()
                 }
-        }
+                self.dataSource = data
+                self.tableView.reloadData()
+            }, onError: {[unowned self] error in
+                self.showAlertWith(title: "Network error", message: error.localizedDescription)
+            })
     }
     
     private func createScreenData(data: (list: [MovieAPIList], genres: [Genres])) -> ([MovieAPIListView]){
         
         for movie in data.list{
-        var genreList: [String] = []
+            var genreList: [String] = []
             for genre in data.genres{
-            if movie.genreIds.contains(genre.id){
-                genreList.append(genre.name)
+                if movie.genreIds.contains(genre.id){
+                    genreList.append(genre.name)
+                }
             }
-        }
             return data.list.map { (data) -> MovieAPIListView in
-            
-            let year = DateUtils.getYearFromDate(stringDate: data.releaseDate)
-            let watched = DatabaseManager.isMovieWatched(with: data.id)
-            let favourite = DatabaseManager.isMovieFovurited(with: data.id)
-            return MovieAPIListView(id: data.id,
-                                    title: data.originalTitle,
-                                    imageURL: data.posterPath ?? "",
-                                    description: data.overview,
-                                    year: year,
-                                    watched: watched,
-                                    favourite: favourite,
-                                    genres: genreList)
+                let year = DateUtils.getYearFromDate(stringDate: data.releaseDate)
+                let watched = DatabaseManager.isMovieWatched(with: data.id)
+                let favourite = DatabaseManager.isMovieFovurited(with: data.id)
+                return MovieAPIListView(id: data.id,
+                                        title: data.originalTitle,
+                                        imageURL: data.posterPath ?? "",
+                                        description: data.overview,
+                                        year: year,
+                                        watched: watched,
+                                        favourite: favourite,
+                                        genres: genreList)
             }
         }
         return dataSource
     }
     
+    func initializeWatchedSubject(for subject: PublishSubject<Int>) -> Disposable{
+        return subject
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [unowned self] movieId in
+                self.watchedMoviePressed(with: movieId)
+            })
+    }
+    
+    func initializeFavouriteSubject(for subject: PublishSubject<Int>) -> Disposable{
+        return subject
+        .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: { [unowned self] movieId in
+            self.favouriteMoviePressed(with: movieId)
+        })
+    }
+    
     func configureTableView() {
         view.addSubview(tableView)
-        
         setTableViewDelegates()
         tableView.estimatedRowHeight = 180
         tableView.rowHeight = UITableView.automaticDimension
@@ -111,7 +136,6 @@ class MovieListViewController: UIViewController {
     }
     
     func setupConstraints(){
-        
         tableView.snp.makeConstraints { (maker) in
             maker.edges.equalTo(view.safeAreaLayoutGuide)
         }
@@ -134,8 +158,12 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         
         let movie = dataSource[indexPath.row]
         cell.configure(movie: movie)
-        cell.updateDelegate = self
-        
+        cell.favouritePressed = { [unowned self] (id) in
+            self.favouriteButtonSubject.onNext(id)
+        }
+        cell.watchedPressed = { [unowned self] (id) in
+            self.watchedButtonSubject.onNext(id)
+        }
         return cell
     }
     

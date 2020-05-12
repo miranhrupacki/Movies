@@ -33,16 +33,13 @@ class SingleMovieViewController: UIViewController {
     }
     
     let disposeBag = DisposeBag()
-    
     var movie: MovieAPIListView
-    
     var screenData = [MovieCellItem]()
-    
     weak var updateDelegate: UserInteraction?
-   
     let indicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-        
     private let networkManager: NetworkManager
+    let watchedButtonSubject = PublishSubject<Int>()
+    let favouriteButtonSubject = PublishSubject<Int>()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -51,6 +48,7 @@ class SingleMovieViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupSubscriptions()
     }
     
     func setupUI(){
@@ -109,6 +107,29 @@ class SingleMovieViewController: UIViewController {
         return screenData
     }
     
+    func setupSubscriptions() {
+        initializeWatchedSubject(for: watchedButtonSubject).disposed(by: disposeBag)
+        initializeFavouriteSubject(for: favouriteButtonSubject).disposed(by: disposeBag)
+    }
+    
+    func initializeWatchedSubject(for subject: PublishSubject<Int>) -> Disposable{
+        return subject
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [unowned self] movieId in
+                self.watchedMoviePressed(with: movieId)
+            })
+    }
+    
+    func initializeFavouriteSubject(for subject: PublishSubject<Int>) -> Disposable{
+        return subject
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [unowned self] movieId in
+                self.favouriteMoviePressed(with: movieId)
+            })
+    }
+    
     func setupConstraints(){
         
         tableView.snp.makeConstraints { (maker) in
@@ -141,8 +162,14 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
                 ImageTableViewCell else {
                     fatalError("The dequeued cell is not an instance of ImageCell.")}
             cell.configureCell(image: movie.imageURL, movie: movie)
-            cell.updateDelegate = self
-
+            
+            cell.favouritePressed = { [unowned self] (id) in
+                self.favouriteButtonSubject.onNext(id)
+            }
+            cell.watchedPressed = { [unowned self] (id) in
+                self.watchedButtonSubject.onNext(id)
+            }
+            
             return cell
             
         case .title:
@@ -160,16 +187,16 @@ extension SingleMovieViewController: UITableViewDelegate, UITableViewDataSource 
                 GenreTableViewCell else {
                     fatalError("The dequeued cell is not an instance of GenreCell.")}
             cell.configureCell(text: safeData)
-
+            
             return cell
-
+            
         case .director:
             guard let safeData = item.data as? String else {return UITableViewCell()}
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DirectorCell", for: indexPath) as?
                 DirectorTableViewCell else {
                     fatalError("The dequeued cell is not an instance of DirectorCell.")}
             cell.configureCell(director: safeData)
-
+            
             return cell
             
         case .description:
@@ -192,9 +219,9 @@ extension SingleMovieViewController: UserInteraction{
         tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         updateDelegate?.watchedMoviePressed(with: id)
     }
-
+    
     func favouriteMoviePressed(with id: Int) {
-
+        
         movie.favourite = !movie.favourite
         tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         updateDelegate?.favouriteMoviePressed(with: id)

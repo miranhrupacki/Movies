@@ -75,9 +75,8 @@ class MovieTableViewCell: UITableViewCell {
     }()
     
     let gradientLayer = CAGradientLayer()
-    
-    weak var updateDelegate: UserInteraction?
-    
+    var favouritePressed: ((Int)-> Void)?
+    var watchedPressed: ((Int)-> Void)?
     internal var id: Int = 0
     
     override func layoutSubviews() {
@@ -97,7 +96,7 @@ class MovieTableViewCell: UITableViewCell {
     
     func setupUI(){
         watchedButton.addTarget(self, action: #selector(watchedButtonPressed), for: .touchUpInside)
-        favouriteButton.addTarget(self, action: #selector(favouriteMoviePressed), for: .touchUpInside)
+        favouriteButton.addTarget(self, action: #selector(favouriteButtonPressed), for: .touchUpInside)
         movieImageView.layer.addSublayer(gradientLayer)
         
         contentView.addSubview(container)
@@ -133,7 +132,7 @@ class MovieTableViewCell: UITableViewCell {
         watchedButton.isSelected = movie.watched
         favouriteButton.isSelected = movie.favourite
     }
-
+    
     func setupGradientLayer() {
         gradientLayer.colors = [UIColor.init(red: 0.106, green: 0.106, blue: 0.118, alpha: 0).cgColor, UIColor.init(red: 0.106, green: 0.106, blue: 0.118, alpha: 0.9).cgColor]
         gradientLayer.locations = [0, 0.82]
@@ -157,7 +156,7 @@ class MovieTableViewCell: UITableViewCell {
             maker.leading.equalTo(movieImageView.snp.trailing).inset(-15)
             maker.trailing.equalToSuperview().inset(12)
         }
-                
+        
         movieGenreLabel.snp.makeConstraints{(maker) in
             maker.top.equalTo(movieTitleLabel.snp.bottom).inset(-1)
             maker.leading.equalTo(movieImageView.snp.trailing).inset(-20)
@@ -185,10 +184,10 @@ class MovieTableViewCell: UITableViewCell {
 
 extension MovieTableViewCell {
     @objc func watchedButtonPressed(){
-        updateDelegate?.watchedMoviePressed(with: id)
+        watchedPressed?(id)
     }
     
-    @objc func favouriteMoviePressed(){
-        updateDelegate?.favouriteMoviePressed(with: id)
+    @objc func favouriteButtonPressed(){
+        favouritePressed?(id)
     }
 }
