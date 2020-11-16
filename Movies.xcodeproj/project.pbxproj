@@ -163,6 +163,7 @@
 		F1572AAD243DDE9A005F8F83 /* Delegate */ = {
 			isa = PBXGroup;
 			children = (
+				F1C42582246AE6B2001CC1BA /* AppDelegate */,
 				F1572AAE243DDEAB005F8F83 /* UserInteraction.swift */,
 			);
 			path = Delegate;
@@ -197,17 +198,14 @@
 		F1BABCD12432371C003D2DCC /* Movies */ = {
 			isa = PBXGroup;
 			children = (
+				F1C42581246AE67E001CC1BA /* Assets */,
 				F1D97DB724531BA4008B9D8F /* Extensions */,
 				F1572AAD243DDE9A005F8F83 /* Delegate */,
 				F1AE6182243A23EA00664364 /* Utils */,
-				F1BABCEF2432384D003D2DCC /* Fonts */,
 				F1BABCF024323852003D2DCC /* Model */,
 				F1028C202438BD54006BCBED /* Manager */,
 				F1BABCF224323871003D2DCC /* MovieSingle */,
 				F1028C2D243A03EF006BCBED /* MovieList */,
-				F1BABCD22432371C003D2DCC /* AppDelegate.swift */,
-				F1BABCDB2432371E003D2DCC /* Assets.xcassets */,
-				F1BABCDD2432371E003D2DCC /* LaunchScreen.storyboard */,
 				F1BABCE02432371E003D2DCC /* Info.plist */,
 			);
 			path = Movies;
@@ -256,6 +254,24 @@
 				F1BABCFC243238C3003D2DCC /* DescriptionTableViewCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		F1C42581246AE67E001CC1BA /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				F1BABCEF2432384D003D2DCC /* Fonts */,
+				F1BABCDB2432371E003D2DCC /* Assets.xcassets */,
+				F1BABCDD2432371E003D2DCC /* LaunchScreen.storyboard */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		F1C42582246AE6B2001CC1BA /* AppDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				F1BABCD22432371C003D2DCC /* AppDelegate.swift */,
+			);
+			path = AppDelegate;
 			sourceTree = "<group>";
 		};
 		F1D97DB724531BA4008B9D8F /* Extensions */ = {
