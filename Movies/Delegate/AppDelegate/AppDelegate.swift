@@ -15,8 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        let initialViewController = UINavigationController(rootViewController: MovieListViewController(networkManager: NetworkManager()))
-        
+        let initialViewController = UINavigationController(rootViewController: TabBarViewController())
+        initialViewController.isNavigationBarHidden = true
+
         self.window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
         self.window?.rootViewController = initialViewController

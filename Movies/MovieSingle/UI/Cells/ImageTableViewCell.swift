@@ -86,7 +86,7 @@ class ImageTableViewCell: UITableViewCell {
     func setupConstraints(){
         movieImageView.snp.makeConstraints { (maker) in
             maker.edges.equalToSuperview()
-            maker.height.equalTo(255)
+            maker.height.equalTo(300)
         }
         
         favouriteButton.snp.makeConstraints { (maker) in

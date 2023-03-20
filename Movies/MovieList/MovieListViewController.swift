@@ -37,6 +37,12 @@ class MovieListViewController: UIViewController {
         setupUI()
         setupSubscriptions()
         movieReplaySubject.onNext(())
+
+        let appearance = UINavigationBarAppearance()
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        navigationItem.standardAppearance = appearance
     }
     
     init(networkManager: NetworkManager){
